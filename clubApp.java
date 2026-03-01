@@ -6,12 +6,12 @@ public class clubApp {
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
-        // Pre-register an admin for testing convenience
-        userManager.addAdmin(new Admin("HMG", "hmg@club.com", "Hmg@123"));
-
+        userManager.addAdmin(new Admin("HMG", "hmg@gmail.com", "Hmg@123"));
+        userManager.addCoordinator(new User("muthu", "muthu@gmail.com", "Muthu@123"));
+        userManager.addStudent(new User("ganesh", "ganesh@gmail.com", "Ganesh@123"));
         while (true) {
             System.out.println("\n========================================================");
-            System.out.println("   Welcome to ClubApp – Dynamic Club Management System");
+            System.out.println("   Welcome to ClubApp - Dynamic Club Management System");
             System.out.println("========================================================");
             System.out.println("1. Login");
             System.out.println("2. Register");
@@ -103,6 +103,8 @@ public class clubApp {
             System.out.println("\n--- Admin Menu (Welcome " + admin.getName() + ") ---");
             System.out.println("1. Create New Club");
             System.out.println("2. View All Clubs");
+            // System.out.println("3. View All Users");
+            // System.out.println("4. ");
             System.out.println("3. Logout");
             System.out.print("Select Choice: ");
             String choice = sc.nextLine();
@@ -210,7 +212,9 @@ public class clubApp {
             System.out.println("\n--- Student Menu ---");
             System.out.println("1. View All Clubs");
             System.out.println("2. Select Club to View Events");
-            System.out.println("3. Logout");
+            System.out.println("3. Join a Club");
+            System.out.println("4. View My Joined Clubs");
+            System.out.println("5. Logout");
             System.out.print("Select Choice: ");
             String choice = sc.nextLine();
 
@@ -234,6 +238,20 @@ public class clubApp {
                     }
                 }
             } else if (choice.equals("3")) {
+                clubManager.listAllClubs();
+                if (clubManager.getClubCount() > 0) {
+                    System.out.print("Enter club number to join: ");
+                    try {
+                        int idx = Integer.parseInt(sc.nextLine()) - 1;
+                        clubManager.joinClub(student, idx);
+                    } catch (Exception e) {
+                        System.out.println("Invalid input!");
+                    }
+                }
+            } else if (choice.equals("4")) {
+                System.out.println("\n--- Your Joined Clubs ---");
+                clubManager.listJoinedClubs(student);
+            } else if (choice.equals("5")) {
                 break;
             } else {
                 System.out.println("Invalid choice!");

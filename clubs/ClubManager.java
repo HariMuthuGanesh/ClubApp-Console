@@ -47,4 +47,31 @@ public class ClubManager {
     public int getClubCount() {
         return clubCount;
     }
+
+    public void listJoinedClubs(User student) {
+        boolean found = false;
+        for (int i = 0; i < clubCount; i++) {
+            if (clubs[i].isMember(student)) {
+                System.out.println("- " + clubs[i].getClubName());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("You haven't joined any clubs yet.");
+        }
+    }
+
+    public void joinClub(User student, int clubIdx) {
+        Club club = getClubByIndex(clubIdx);
+        if (club != null) {
+            if (club.isMember(student)) {
+                System.out.println("You are already a member of this club!");
+            } else {
+                club.addMember(student);
+                System.out.println("Successfully joined " + club.getClubName() + "!");
+            }
+        } else {
+            System.out.println("Invalid club selection.");
+        }
+    }
 }

@@ -5,6 +5,8 @@ public class Club {
     private User coordinator;
     private Event[] events = new Event[100];
     private int eventCount = 0;
+    private User[] members = new User[500];
+    private int memberCount = 0;
 
     public Club(String clubName, String description, User coordinator) {
         this.clubName = clubName;
@@ -65,5 +67,20 @@ public class Club {
         } else {
             System.out.println("Invalid event index.");
         }
+    }
+
+    public void addMember(User student) {
+        if (memberCount < 500) {
+            members[memberCount++] = student;
+        }
+    }
+
+    public boolean isMember(User student) {
+        for (int i = 0; i < memberCount; i++) {
+            if (members[i].getEmail().equalsIgnoreCase(student.getEmail())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
