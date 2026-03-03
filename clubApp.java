@@ -1,4 +1,7 @@
 import java.util.Scanner;
+import manage.*;
+import clubs.*;
+import details.*;
 
 public class clubApp {
     private static UserManager userManager = new UserManager();
@@ -6,9 +9,18 @@ public class clubApp {
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
-        userManager.addAdmin(new Admin("HMG", "hmg@gmail.com", "Hmg@123"));
-        userManager.addCoordinator(new User("muthu", "muthu@gmail.com", "Muthu@123"));
-        userManager.addStudent(new User("ganesh", "ganesh@gmail.com", "Ganesh@123"));
+        clubManager.loadAll(userManager);
+        // Add initial users only if system is empty
+        if (userManager.validateAdmin("hari@gmail.com", "Hari@123") == null) {
+            userManager.addAdmin(new Admin("Hari", "hari@gmail.com", "Hari@123"));
+        }
+        if (userManager.findCoordinatorByEmail("muthu@gmail.com") == null) {
+            userManager.addCoordinator(new User("Muthu", "muthu@gmail.com", "Muthu@123"));
+        }
+        if (userManager.findStudentByEmail("ganesh@gmail.com") == null) {
+            userManager.addStudent(new User("Ganesh", "ganesh@gmail.com", "Ganesh@123"));
+        }
+
         while (true) {
             System.out.println("\n========================================================");
             System.out.println("   Welcome to ClubApp - Dynamic Club Management System");
@@ -167,6 +179,7 @@ public class clubApp {
                     System.out.print("Date: ");
                     String date = sc.nextLine();
                     club.addEvent(new Event(ename, edesc, venue, date));
+                    clubManager.saveAll();
                     break;
                 case "3":
                     club.listEvents();
@@ -177,6 +190,7 @@ public class clubApp {
                     try {
                         int idx = Integer.parseInt(sc.nextLine()) - 1;
                         club.removeEvent(idx);
+                        clubManager.saveAll();
                     } catch (Exception e) {
                         System.out.println("Invalid input!");
                     }
@@ -195,6 +209,7 @@ public class clubApp {
                         System.out.print("New Date: ");
                         String ndate = sc.nextLine();
                         club.updateEvent(index, new Event(nname, ndesc, nvenue, ndate));
+                        clubManager.saveAll();
                     } catch (Exception e) {
                         System.out.println("Invalid input!");
                     }

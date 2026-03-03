@@ -1,3 +1,6 @@
+package clubs;
+
+import manage.User;
 
 public class Event {
     private String name;

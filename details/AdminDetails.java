@@ -1,5 +1,9 @@
+package details;
 
 import java.util.Scanner;
+import manage.UserManager;
+import manage.Admin;
+import validator.Validator;
 
 public class AdminDetails {
     public static void register(UserManager userManager) {

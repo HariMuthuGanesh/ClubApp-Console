@@ -1,3 +1,4 @@
+package manage;
 
 public class Person {
     private String name;
