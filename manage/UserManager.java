@@ -65,6 +65,15 @@ public class UserManager {
         return null;
     }
 
+    public Admin findAdminByEmail(String email) {
+        for (Admin admin : admins) {
+            if (admin.getEmail().equalsIgnoreCase(email)) {
+                return admin;
+            }
+        }
+        return null;
+    }
+
     public User findStudentByEmail(String email) {
         for (User student : students) {
             if (student.getEmail().equalsIgnoreCase(email)) {

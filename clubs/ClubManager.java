@@ -14,8 +14,23 @@ public class ClubManager {
     private static final String REGISTRATIONS_FILE = "file/event_registrations.txt";
 
     public void addClub(Club club) {
+        if (findClubByName(club.getClubName()) != null) {
+            System.out.println("Club with this name already exists!");
+            return;
+        }
         clubs.add(club);
         saveAll();
+    }
+
+    public void removeClub(int index) {
+        if (index >= 0 && index < clubs.size()) {
+            System.out.println("Removing Club: " + clubs.get(index).getClubName());
+            clubs.remove(index);
+            saveAll();
+            System.out.println("Club removed successfully.");
+        } else {
+            System.out.println("Invalid club index.");
+        }
     }
 
     public void listAllClubs() {
@@ -57,7 +72,7 @@ public class ClubManager {
         return clubs.size();
     }
 
-    public void listJoinedClubs(User student) {
+    public void listJoinedClubs(manage.Person student) {
         boolean found = false;
         for (Club club : clubs) {
             if (club.isMember(student)) {
@@ -70,7 +85,7 @@ public class ClubManager {
         }
     }
 
-    public void joinClub(User student, int clubIdx) {
+    public void joinClub(manage.Person student, int clubIdx) {
         Club club = getClubByIndex(clubIdx);
         if (club != null) {
             if (club.isMember(student)) {
@@ -99,7 +114,7 @@ public class ClubManager {
                             + e.getVenue() + "|" + e.getDate());
                 }
 
-                for (User m : club.getMembers()) {
+                for (manage.Person m : club.getMembers()) {
                     memberWriter.println(club.getClubName() + "|" + m.getEmail());
                 }
             }
@@ -107,7 +122,7 @@ public class ClubManager {
             try (PrintWriter regWriter = new PrintWriter(new FileWriter(REGISTRATIONS_FILE))) {
                 for (Club club : clubs) {
                     for (Event e : club.getEvents()) {
-                        for (User attendee : e.getAttendees()) {
+                        for (manage.Person attendee : e.getAttendees()) {
                             regWriter.println(club.getClubName() + "|" + e.getName() + "|" + attendee.getEmail());
                         }
                     }
@@ -172,7 +187,13 @@ public class ClubManager {
                     if (parts.length < 2)
                         continue;
                     Club club = findClubByName(parts[0]);
-                    User member = userManager.findStudentByEmail(parts[1]);
+                    manage.Person member = userManager.findStudentByEmail(parts[1]);
+                    if (member == null) {
+                        member = userManager.findCoordinatorByEmail(parts[1]);
+                    }
+                    if (member == null) {
+                        member = userManager.findAdminByEmail(parts[1]);
+                    }
                     if (club != null && member != null) {
                         club.addMember(member);
                     }
@@ -195,9 +216,15 @@ public class ClubManager {
                     if (club != null) {
                         for (Event e : club.getEvents()) {
                             if (e.getName().equalsIgnoreCase(parts[1])) {
-                                User student = userManager.findStudentByEmail(parts[2]);
-                                if (student != null) {
-                                    e.addAttendee(student);
+                                manage.Person person = userManager.findStudentByEmail(parts[2]);
+                                if (person == null) {
+                                    person = userManager.findCoordinatorByEmail(parts[2]);
+                                }
+                                if (person == null) {
+                                    person = userManager.findAdminByEmail(parts[2]);
+                                }
+                                if (person != null) {
+                                    e.addAttendee(person);
                                 }
                                 break;
                             }

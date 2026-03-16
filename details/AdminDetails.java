@@ -16,9 +16,14 @@ public class AdminDetails {
         while (true) {
             System.out.print("Enter Email: ");
             email = sc.nextLine();
-            if (Validator.isValidEmail(email))
-                break;
-            System.out.println("Invalid Email format! Try again.");
+            if (Validator.isValidEmail(email)) {
+                if (userManager.findAdminByEmail(email) == null)
+                    break;
+                else
+                    System.out.println("Admin email already registered!");
+            } else {
+                System.out.println("Invalid Email format! Try again.");
+            }
         }
 
         String password;

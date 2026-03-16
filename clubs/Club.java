@@ -9,7 +9,7 @@ public class Club {
     private String description;
     private User coordinator;
     private List<Event> events = new ArrayList<>();
-    private List<User> members = new ArrayList<>();
+    private List<manage.Person> members = new ArrayList<>();
 
     public Club(String clubName, String description, User coordinator) {
         this.clubName = clubName;
@@ -33,7 +33,7 @@ public class Club {
         return events;
     }
 
-    public List<User> getMembers() {
+    public List<manage.Person> getMembers() {
         return members;
     }
 
@@ -45,6 +45,12 @@ public class Club {
     }
 
     public void addEvent(Event event) {
+        for (Event e : events) {
+            if (e.getName().equalsIgnoreCase(event.getName())) {
+                System.out.println("Event with this name already scheduled for this club!");
+                return;
+            }
+        }
         events.add(event);
         System.out.println("Event added successfully.");
     }
@@ -77,12 +83,12 @@ public class Club {
         }
     }
 
-    public void addMember(User student) {
+    public void addMember(manage.Person student) {
         members.add(student);
     }
 
-    public boolean isMember(User student) {
-        for (User member : members) {
+    public boolean isMember(manage.Person student) {
+        for (manage.Person member : members) {
             if (member.getEmail().equalsIgnoreCase(student.getEmail())) {
                 return true;
             }
@@ -90,7 +96,7 @@ public class Club {
         return false;
     }
 
-    public boolean registerStudentForEvent(User student, int eventIndex) {
+    public boolean registerStudentForEvent(manage.Person student, int eventIndex) {
         if (eventIndex >= 0 && eventIndex < events.size()) {
             Event event = events.get(eventIndex);
             if (event.isRegistered(student)) {

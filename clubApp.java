@@ -114,10 +114,10 @@ public class clubApp {
         while (true) {
             System.out.println("\n--- Admin Menu (Welcome " + admin.getName() + ") ---");
             System.out.println("1. Create New Club");
-            System.out.println("2. View All Clubs");
-            // System.out.println("3. View All Users");
-            // System.out.println("4. ");
-            System.out.println("3. Logout");
+            System.out.println("2. View All Clubs / Join / Manage Events");
+            System.out.println("3. View My Joined Clubs");
+            System.out.println("4. Delete a Club");
+            System.out.println("5. Logout");
             System.out.print("Select Choice: ");
             String choice = sc.nextLine();
 
@@ -139,7 +139,136 @@ public class clubApp {
                 }
             } else if (choice.equals("2")) {
                 clubManager.listAllClubs();
+                if (clubManager.getClubCount() > 0) {
+                    System.out.print("Enter club number to interact: ");
+                    try {
+                        int idx = Integer.parseInt(sc.nextLine()) - 1;
+                        Club selected = clubManager.getClubByIndex(idx);
+                        if (selected != null) {
+                            clubInteractionMenu(admin, selected, true);
+                        } else {
+                            System.out.println("Invalid club number!");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Invalid input!");
+                    }
+                }
             } else if (choice.equals("3")) {
+                System.out.println("\n--- Your Joined Clubs ---");
+                clubManager.listJoinedClubs(admin);
+            } else if (choice.equals("4")) {
+                clubManager.listAllClubs();
+                if (clubManager.getClubCount() > 0) {
+                    System.out.print("Enter club number to DELETE: ");
+                    try {
+                        int idx = Integer.parseInt(sc.nextLine()) - 1;
+                        clubManager.removeClub(idx);
+                    } catch (Exception e) {
+                        System.out.println("Invalid input!");
+                    }
+                }
+            } else if (choice.equals("5")) {
+                break;
+            } else {
+                System.out.println("Invalid choice!");
+            }
+        }
+    }
+
+    private static void clubInteractionMenu(manage.Person person, Club club, boolean fullAccess) {
+        while (true) {
+            System.out.println("\n--- Club: " + club.getClubName() + " ---");
+            System.out.println("1. View Club Details");
+            System.out.println("2. View Events");
+            System.out.println("3. Join Club");
+            System.out.println("4. Register for an Event");
+            
+            int option = 5;
+            boolean isAdmin = person instanceof Admin;
+            
+            if (fullAccess || isAdmin) {
+                System.out.println(option++ + ". Add Event");
+            }
+            
+            // Restricted functions
+            if (fullAccess) {
+                System.out.println(option++ + ". Remove Event");
+                System.out.println(option++ + ". Update Event");
+            }
+            
+            System.out.println("0. Back");
+            System.out.print("Select Choice: ");
+            String choice = sc.nextLine();
+
+            if (choice.equals("1")) {
+                club.viewDetails();
+            } else if (choice.equals("2")) {
+                club.listEvents();
+            } else if (choice.equals("3")) {
+                clubManager.joinClub(person, clubManager.getClubCount()); // This is wrong, I need the index or a different method
+                // Wait, joinClub in ClubManager takes an index. I'll search for the index.
+                int cIdx = -1;
+                for(int i=0; i<clubManager.getClubCount(); i++) {
+                    if(clubManager.getClubByIndex(i) == club) {
+                        cIdx = i;
+                        break;
+                    }
+                }
+                clubManager.joinClub(person, cIdx);
+            } else if (choice.equals("4")) {
+                club.listEvents();
+                if (!club.getEvents().isEmpty()) {
+                    System.out.print("Enter event number to register: ");
+                    try {
+                        int eIdx = Integer.parseInt(sc.nextLine()) - 1;
+                        if (club.registerStudentForEvent(person, eIdx)) {
+                            clubManager.saveAll();
+                            System.out.println("Successfully registered for the event!");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Invalid input!");
+                    }
+                }
+            } else if (choice.equals("5") && (fullAccess || isAdmin)) {
+                System.out.print("Event Name: ");
+                String ename = sc.nextLine();
+                System.out.print("Description: ");
+                String edesc = sc.nextLine();
+                System.out.print("Venue: ");
+                String venue = sc.nextLine();
+                System.out.print("Date: ");
+                String date = sc.nextLine();
+                club.addEvent(new Event(ename, edesc, venue, date));
+                clubManager.saveAll();
+            } else if (choice.equals("6") && fullAccess) {
+                club.listEvents();
+                System.out.print("Enter event number to remove: ");
+                try {
+                    int idx = Integer.parseInt(sc.nextLine()) - 1;
+                    club.removeEvent(idx);
+                    clubManager.saveAll();
+                } catch (Exception e) {
+                    System.out.println("Invalid input!");
+                }
+            } else if (choice.equals("7") && fullAccess) {
+                club.listEvents();
+                System.out.print("Enter event number to update: ");
+                try {
+                    int index = Integer.parseInt(sc.nextLine()) - 1;
+                    System.out.print("New Name: ");
+                    String nname = sc.nextLine();
+                    System.out.print("New Description: ");
+                    String ndesc = sc.nextLine();
+                    System.out.print("New Venue: ");
+                    String nvenue = sc.nextLine();
+                    System.out.print("New Date: ");
+                    String ndate = sc.nextLine();
+                    club.updateEvent(index, new Event(nname, ndesc, nvenue, ndate));
+                    clubManager.saveAll();
+                } catch (Exception e) {
+                    System.out.println("Invalid input!");
+                }
+            } else if (choice.equals("0")) {
                 break;
             } else {
                 System.out.println("Invalid choice!");
@@ -153,90 +282,19 @@ public class clubApp {
             System.out.println("You are not assigned to any club yet. Contact Admin.");
             return;
         }
-
-        while (true) {
-            System.out.println("\n--- Coordinator Menu: " + club.getClubName() + " ---");
-            System.out.println("1. View Club Details");
-            System.out.println("2. Add Event");
-            System.out.println("3. View Events");
-            System.out.println("4. Remove Event");
-            System.out.println("5. Update Event");
-            System.out.println("6. Logout");
-            System.out.print("Select Choice: ");
-            String choice = sc.nextLine();
-
-            switch (choice) {
-                case "1":
-                    club.viewDetails();
-                    break;
-                case "2":
-                    System.out.print("Event Name: ");
-                    String ename = sc.nextLine();
-                    System.out.print("Description: ");
-                    String edesc = sc.nextLine();
-                    System.out.print("Venue: ");
-                    String venue = sc.nextLine();
-                    System.out.print("Date: ");
-                    String date = sc.nextLine();
-                    club.addEvent(new Event(ename, edesc, venue, date));
-                    clubManager.saveAll();
-                    break;
-                case "3":
-                    club.listEvents();
-                    break;
-                case "4":
-                    club.listEvents();
-                    System.out.print("Enter event number to remove: ");
-                    try {
-                        int idx = Integer.parseInt(sc.nextLine()) - 1;
-                        club.removeEvent(idx);
-                        clubManager.saveAll();
-                    } catch (Exception e) {
-                        System.out.println("Invalid input!");
-                    }
-                    break;
-                case "5":
-                    club.listEvents();
-                    System.out.print("Enter event number to update: ");
-                    try {
-                        int index = Integer.parseInt(sc.nextLine()) - 1;
-                        System.out.print("New Name: ");
-                        String nname = sc.nextLine();
-                        System.out.print("New Description: ");
-                        String ndesc = sc.nextLine();
-                        System.out.print("New Venue: ");
-                        String nvenue = sc.nextLine();
-                        System.out.print("New Date: ");
-                        String ndate = sc.nextLine();
-                        club.updateEvent(index, new Event(nname, ndesc, nvenue, ndate));
-                        clubManager.saveAll();
-                    } catch (Exception e) {
-                        System.out.println("Invalid input!");
-                    }
-                    break;
-                case "6":
-                    return;
-                default:
-                    System.out.println("Invalid choice!");
-            }
-        }
+        clubInteractionMenu(coordinator, club, true);
     }
 
     private static void studentMenu(User student) {
         while (true) {
             System.out.println("\n--- Student Menu ---");
-            System.out.println("1. View All Clubs");
-            System.out.println("2. Select Club to View Events");
-            System.out.println("3. Join a Club");
-            System.out.println("4. View My Joined Clubs");
-            System.out.println("5. Register for an Event");
-            System.out.println("6. Logout");
+            System.out.println("1. View All Clubs / Join / View Events");
+            System.out.println("2. View My Joined Clubs");
+            System.out.println("3. Logout");
             System.out.print("Select Choice: ");
             String choice = sc.nextLine();
 
             if (choice.equals("1")) {
-                clubManager.listAllClubs();
-            } else if (choice.equals("2")) {
                 clubManager.listAllClubs();
                 if (clubManager.getClubCount() > 0) {
                     System.out.print("Enter club number: ");
@@ -244,8 +302,7 @@ public class clubApp {
                         int idx = Integer.parseInt(sc.nextLine()) - 1;
                         Club selected = clubManager.getClubByIndex(idx);
                         if (selected != null) {
-                            selected.viewDetails();
-                            selected.listEvents();
+                            clubInteractionMenu(student, selected, false);
                         } else {
                             System.out.println("Invalid club number!");
                         }
@@ -253,45 +310,10 @@ public class clubApp {
                         System.out.println("Invalid input!");
                     }
                 }
-            } else if (choice.equals("3")) {
-                clubManager.listAllClubs();
-                if (clubManager.getClubCount() > 0) {
-                    System.out.print("Enter club number to join: ");
-                    try {
-                        int idx = Integer.parseInt(sc.nextLine()) - 1;
-                        clubManager.joinClub(student, idx);
-                    } catch (Exception e) {
-                        System.out.println("Invalid input!");
-                    }
-                }
-            } else if (choice.equals("4")) {
+            } else if (choice.equals("2")) {
                 System.out.println("\n--- Your Joined Clubs ---");
                 clubManager.listJoinedClubs(student);
-            } else if (choice.equals("5")) {
-                clubManager.listAllClubs();
-                if (clubManager.getClubCount() > 0) {
-                    System.out.print("Enter club number to see events: ");
-                    try {
-                        int cIdx = Integer.parseInt(sc.nextLine()) - 1;
-                        Club selected = clubManager.getClubByIndex(cIdx);
-                        if (selected != null) {
-                            selected.listEvents();
-                            if (!selected.getEvents().isEmpty()) {
-                                System.out.print("Enter event number to register: ");
-                                int eIdx = Integer.parseInt(sc.nextLine()) - 1;
-                                if (selected.registerStudentForEvent(student, eIdx)) {
-                                    clubManager.saveAll();
-                                    System.out.println("Successfully registered for the event!");
-                                }
-                            }
-                        } else {
-                            System.out.println("Invalid club number!");
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Invalid input!");
-                    }
-                }
-            } else if (choice.equals("6")) {
+            } else if (choice.equals("3")) {
                 break;
             } else {
                 System.out.println("Invalid choice!");

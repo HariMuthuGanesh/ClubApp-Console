@@ -1,13 +1,12 @@
 package clubs;
 
-import manage.User;
 
 public class Event {
     private String name;
     private String description;
     private String venue;
     private String date;
-    private java.util.List<User> attendees = new java.util.ArrayList<>();
+    private java.util.List<manage.Person> attendees = new java.util.ArrayList<>();
 
     public Event(String name, String description, String venue, String date) {
         this.name = name;
@@ -32,18 +31,18 @@ public class Event {
         return date;
     }
 
-    public java.util.List<User> getAttendees() {
+    public java.util.List<manage.Person> getAttendees() {
         return attendees;
     }
 
-    public void addAttendee(User student) {
+    public void addAttendee(manage.Person student) {
         if (!isRegistered(student)) {
             attendees.add(student);
         }
     }
 
-    public boolean isRegistered(User student) {
-        for (User u : attendees) {
+    public boolean isRegistered(manage.Person student) {
+        for (manage.Person u : attendees) {
             if (u.getEmail().equalsIgnoreCase(student.getEmail())) {
                 return true;
             }
