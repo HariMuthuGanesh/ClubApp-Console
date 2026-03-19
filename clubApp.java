@@ -9,17 +9,17 @@ public class clubApp {
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
-        clubManager.loadAll(userManager);
-        // Add initial users only if system is empty
-        if (userManager.validateAdmin("hari@gmail.com", "Hari@123") == null) {
-            userManager.addAdmin(new Admin("Hari", "hari@gmail.com", "Hari@123"));
-        }
-        if (userManager.findCoordinatorByEmail("muthu@gmail.com") == null) {
-            userManager.addCoordinator(new User("Muthu", "muthu@gmail.com", "Muthu@123"));
-        }
-        if (userManager.findStudentByEmail("ganesh@gmail.com") == null) {
-            userManager.addStudent(new User("Ganesh", "ganesh@gmail.com", "Ganesh@123"));
-        }
+        // clubManager.loadAll(userManager);
+        // if (userManager.validateAdmin("hari@gmail.com", "Hari@123") == null) {
+        // userManager.addAdmin(new Admin("Hari", "hari@gmail.com", "Hari@123"));
+        // }
+        // if (userManager.findCoordinatorByEmail("muthu@gmail.com") == null) {
+        // userManager.addCoordinator(new User("Muthu", "muthu@gmail.com",
+        // "Muthu@123"));
+        // }
+        // if (userManager.findStudentByEmail("ganesh@gmail.com") == null) {
+        // userManager.addStudent(new User("Ganesh", "ganesh@gmail.com", "Ganesh@123"));
+        // }
 
         while (true) {
             System.out.println("\n========================================================");
@@ -182,20 +182,20 @@ public class clubApp {
             System.out.println("2. View Events");
             System.out.println("3. Join Club");
             System.out.println("4. Register for an Event");
-            
+
             int option = 5;
             boolean isAdmin = person instanceof Admin;
-            
+
             if (fullAccess || isAdmin) {
                 System.out.println(option++ + ". Add Event");
             }
-            
+
             // Restricted functions
             if (fullAccess) {
                 System.out.println(option++ + ". Remove Event");
                 System.out.println(option++ + ". Update Event");
             }
-            
+
             System.out.println("0. Back");
             System.out.print("Select Choice: ");
             String choice = sc.nextLine();
@@ -205,11 +205,10 @@ public class clubApp {
             } else if (choice.equals("2")) {
                 club.listEvents();
             } else if (choice.equals("3")) {
-                clubManager.joinClub(person, clubManager.getClubCount()); // This is wrong, I need the index or a different method
-                // Wait, joinClub in ClubManager takes an index. I'll search for the index.
+                clubManager.joinClub(person, clubManager.getClubCount());
                 int cIdx = -1;
-                for(int i=0; i<clubManager.getClubCount(); i++) {
-                    if(clubManager.getClubByIndex(i) == club) {
+                for (int i = 0; i < clubManager.getClubCount(); i++) {
+                    if (clubManager.getClubByIndex(i) == club) {
                         cIdx = i;
                         break;
                     }
