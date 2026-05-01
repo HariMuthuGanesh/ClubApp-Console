@@ -38,5 +38,6 @@ public class CoordinatorDetails {
         User coordinator = new User(name, email, password);
         userManager.addCoordinator(coordinator);
         System.out.println("Coordinator registered successfully!");
+        sc.close();
     }
 }

@@ -38,5 +38,6 @@ public class StudentDetails {
         User student = new User(name, email, password);
         userManager.addStudent(student);
         System.out.println("Student registered successfully!");
+        sc.close();
     }
 }

@@ -38,5 +38,7 @@ public class AdminDetails {
         Admin admin = new Admin(name, email, password);
         userManager.addAdmin(admin);
         System.out.println("Admin registered successfully!");
+
+        sc.close();
     }
 }

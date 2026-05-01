@@ -11,15 +11,16 @@ public class clubApp {
 
     public static void main(String[] args) {
         clubManager.loadAll(userManager);
-        // if (userManager.validateAdmin("hari@gmail.com", "Hari@123") == null) {
-        // userManager.addAdmin(new Admin("Hari", "hari@gmail.com", "Hari@123"));
+        // if (userManager.validateAdmin("admin@gmail.com", "admin@123") == null) {
+        // userManager.addAdmin(new Admin("Hari", "admin@gmail.com", "admin@123"));
         // }
-        // if (userManager.findCoordinatorByEmail("muthu@gmail.com") == null) {
-        // userManager.addCoordinator(new User("Muthu", "muthu@gmail.com",
+        // if (userManager.findCoordinatorByEmail("coordinator@gmail.com") == null) {
+        // userManager.addCoordinator(new User("coordinator", "coordinator@gmail.com",
         // "Muthu@123"));
         // }
-        // if (userManager.findStudentByEmail("ganesh@gmail.com") == null) {
-        // userManager.addStudent(new User("Ganesh", "ganesh@gmail.com", "Ganesh@123"));
+        // if (userManager.findStudentByEmail("student@gmail.com") == null) {
+        // userManager.addStudent(new User("Student", "student@gmail.com",
+        // "Student@123"));
         // }
 
         while (true) {
