@@ -91,6 +91,10 @@ public class UserManager {
     }
 
     private void saveUsers() {
+        File directory = new File("file");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
         try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_PATH))) {
             for (Admin a : admins)
                 writer.println("ADMIN|" + a.getName() + "|" + a.getEmail() + "|" + a.getPassword());

@@ -114,6 +114,10 @@ public class ClubManager {
     }
 
     public void saveAll() {
+        File directory = new File("file");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
         try (PrintWriter clubWriter = new PrintWriter(new FileWriter(CLUBS_FILE));
                 PrintWriter eventWriter = new PrintWriter(new FileWriter(EVENTS_FILE))) {
 

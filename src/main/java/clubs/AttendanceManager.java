@@ -67,6 +67,10 @@ public class AttendanceManager {
     }
 
     public void saveAttendance() {
+        File directory = new File("file");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
         try (PrintWriter writer = new PrintWriter(new FileWriter(ATTENDANCE_FILE))) {
             for (String record : attendanceRecords) {
                 writer.println(record);

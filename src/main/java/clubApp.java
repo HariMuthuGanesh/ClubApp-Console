@@ -310,7 +310,8 @@ public class clubApp {
                 try {
                     int eIdx = Integer.parseInt(sc.nextLine()) - 1;
                     Event event = club.getEvents().get(eIdx);
-                    java.util.List<String> records = attendanceManager.getAttendance(club.getClubName(), event.getName());
+                    java.util.List<String> records = attendanceManager.getAttendance(club.getClubName(),
+                            event.getName());
                     if (records.isEmpty()) {
                         System.out.println("No attendance records found.");
                     } else {
