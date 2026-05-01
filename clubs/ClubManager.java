@@ -11,7 +11,9 @@ public class ClubManager {
     private static final String CLUBS_FILE = "file/clubs.txt";
     private static final String EVENTS_FILE = "file/events.txt";
     private static final String MEMBERS_FILE = "file/members.txt";
-    private static final String REGISTRATIONS_FILE = "file/event_registrations.txt";
+    private static final String REGISTRATIONS_FILE = "file/registrations.txt";
+    private static final String ATTENDANCE_FILE = "file/attendance.txt";
+    private static final String LOGS_FILE = "file/logs.txt";
 
     public void addClub(Club club) {
         if (findClubByName(club.getClubName()) != null) {
@@ -24,13 +26,24 @@ public class ClubManager {
 
     public void removeClub(int index) {
         if (index >= 0 && index < clubs.size()) {
-            System.out.println("Removing Club: " + clubs.get(index).getClubName());
+            Club club = clubs.get(index);
+            System.out.println("Removing Club: " + club.getClubName());
             clubs.remove(index);
             saveAll();
             System.out.println("Club removed successfully.");
         } else {
             System.out.println("Invalid club index.");
         }
+    }
+
+    public void removeUserFromAll(String email) {
+        for (Club club : clubs) {
+            club.getMembers().removeIf(m -> m.getEmail().equalsIgnoreCase(email));
+            for (Event event : club.getEvents()) {
+                event.getAttendees().removeIf(a -> a.getEmail().equalsIgnoreCase(email));
+            }
+        }
+        saveAll();
     }
 
     public void listAllClubs() {
@@ -102,8 +115,7 @@ public class ClubManager {
 
     public void saveAll() {
         try (PrintWriter clubWriter = new PrintWriter(new FileWriter(CLUBS_FILE));
-                PrintWriter eventWriter = new PrintWriter(new FileWriter(EVENTS_FILE));
-                PrintWriter memberWriter = new PrintWriter(new FileWriter(MEMBERS_FILE))) {
+                PrintWriter eventWriter = new PrintWriter(new FileWriter(EVENTS_FILE))) {
 
             for (Club club : clubs) {
                 clubWriter.println(
@@ -111,23 +123,11 @@ public class ClubManager {
 
                 for (Event e : club.getEvents()) {
                     eventWriter.println(club.getClubName() + "|" + e.getName() + "|" + e.getDescription() + "|"
-                            + e.getVenue() + "|" + e.getDate());
-                }
-
-                for (manage.Person m : club.getMembers()) {
-                    memberWriter.println(club.getClubName() + "|" + m.getEmail());
+                            + e.getVenue() + "|" + e.getDate() + "|" + e.isMembersOnly());
                 }
             }
-
-            try (PrintWriter regWriter = new PrintWriter(new FileWriter(REGISTRATIONS_FILE))) {
-                for (Club club : clubs) {
-                    for (Event e : club.getEvents()) {
-                        for (manage.Person attendee : e.getAttendees()) {
-                            regWriter.println(club.getClubName() + "|" + e.getName() + "|" + attendee.getEmail());
-                        }
-                    }
-                }
-            }
+            MemberManager.saveMembers(clubs);
+            RegistrationManager.saveRegistrations(clubs);
         } catch (IOException e) {
             System.err.println("Error saving club data: " + e.getMessage());
         }
@@ -169,7 +169,8 @@ public class ClubManager {
                         continue;
                     Club club = findClubByName(parts[0]);
                     if (club != null) {
-                        club.getEvents().add(new Event(parts[1], parts[2], parts[3], parts[4]));
+                        boolean mOnly = parts.length >= 6 && Boolean.parseBoolean(parts[5]);
+                        club.getEvents().add(new Event(parts[1], parts[2], parts[3], parts[4], mOnly));
                     }
                 }
             } catch (IOException e) {

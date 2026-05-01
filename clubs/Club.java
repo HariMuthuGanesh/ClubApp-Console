@@ -99,6 +99,10 @@ public class Club {
     public boolean registerStudentForEvent(manage.Person student, int eventIndex) {
         if (eventIndex >= 0 && eventIndex < events.size()) {
             Event event = events.get(eventIndex);
+            if (event.isMembersOnly() && !isMember(student)) {
+                System.out.println("Registration rejected: This event is for club members only.");
+                return false;
+            }
             if (event.isRegistered(student)) {
                 System.out.println("Already registered for this event.");
                 return false;

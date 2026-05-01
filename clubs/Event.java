@@ -6,13 +6,15 @@ public class Event {
     private String description;
     private String venue;
     private String date;
+    private boolean membersOnly;
     private java.util.List<manage.Person> attendees = new java.util.ArrayList<>();
 
-    public Event(String name, String description, String venue, String date) {
+    public Event(String name, String description, String venue, String date, boolean membersOnly) {
         this.name = name;
         this.description = description;
         this.venue = venue;
         this.date = date;
+        this.membersOnly = membersOnly;
     }
 
     public String getName() {
@@ -66,9 +68,17 @@ public class Event {
         this.date = date;
     }
 
+    public boolean isMembersOnly() {
+        return membersOnly;
+    }
+
+    public void setMembersOnly(boolean membersOnly) {
+        this.membersOnly = membersOnly;
+    }
+
     @Override
     public String toString() {
         return "Event: " + name + " | Description: " + description + " | Venue: " + venue + " | Date: " + date
-                + " | Registered: " + attendees.size();
+                + " | Members Only: " + (membersOnly ? "Yes" : "No") + " | Registered: " + attendees.size();
     }
 }

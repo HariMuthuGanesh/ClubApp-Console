@@ -6,10 +6,11 @@ import details.*;
 public class clubApp {
     private static UserManager userManager = new UserManager();
     private static ClubManager clubManager = new ClubManager();
+    private static AttendanceManager attendanceManager = new AttendanceManager();
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
-        // clubManager.loadAll(userManager);
+        clubManager.loadAll(userManager);
         // if (userManager.validateAdmin("hari@gmail.com", "Hari@123") == null) {
         // userManager.addAdmin(new Admin("Hari", "hari@gmail.com", "Hari@123"));
         // }
@@ -117,7 +118,8 @@ public class clubApp {
             System.out.println("2. View All Clubs / Join / Manage Events");
             System.out.println("3. View My Joined Clubs");
             System.out.println("4. Delete a Club");
-            System.out.println("5. Logout");
+            System.out.println("5. Delete a User");
+            System.out.println("6. Logout");
             System.out.print("Select Choice: ");
             String choice = sc.nextLine();
 
@@ -162,12 +164,24 @@ public class clubApp {
                     System.out.print("Enter club number to DELETE: ");
                     try {
                         int idx = Integer.parseInt(sc.nextLine()) - 1;
-                        clubManager.removeClub(idx);
+                        Club club = clubManager.getClubByIndex(idx);
+                        if (club != null) {
+                            String cname = club.getClubName();
+                            clubManager.removeClub(idx);
+                            attendanceManager.removeAttendanceByClub(cname);
+                        }
                     } catch (Exception e) {
                         System.out.println("Invalid input!");
                     }
                 }
             } else if (choice.equals("5")) {
+                System.out.print("Enter User Email to DELETE: ");
+                String email = sc.nextLine();
+                userManager.removeUser(email);
+                clubManager.removeUserFromAll(email);
+                attendanceManager.removeAttendanceByUser(email);
+                System.out.println("User and all associated records removed.");
+            } else if (choice.equals("6")) {
                 break;
             } else {
                 System.out.println("Invalid choice!");
@@ -194,6 +208,8 @@ public class clubApp {
             if (fullAccess) {
                 System.out.println(option++ + ". Remove Event");
                 System.out.println(option++ + ". Update Event");
+                System.out.println(option++ + ". Mark Attendance");
+                System.out.println(option++ + ". View Attendance");
             }
 
             System.out.println("0. Back");
@@ -205,7 +221,6 @@ public class clubApp {
             } else if (choice.equals("2")) {
                 club.listEvents();
             } else if (choice.equals("3")) {
-                clubManager.joinClub(person, clubManager.getClubCount());
                 int cIdx = -1;
                 for (int i = 0; i < clubManager.getClubCount(); i++) {
                     if (clubManager.getClubByIndex(i) == club) {
@@ -237,15 +252,20 @@ public class clubApp {
                 String venue = sc.nextLine();
                 System.out.print("Date: ");
                 String date = sc.nextLine();
-                club.addEvent(new Event(ename, edesc, venue, date));
+                System.out.print("Is this event for club members only? (yes/no): ");
+                boolean mOnly = sc.nextLine().equalsIgnoreCase("yes");
+                club.addEvent(new Event(ename, edesc, venue, date, mOnly));
                 clubManager.saveAll();
             } else if (choice.equals("6") && fullAccess) {
                 club.listEvents();
                 System.out.print("Enter event number to remove: ");
                 try {
                     int idx = Integer.parseInt(sc.nextLine()) - 1;
+                    Event event = club.getEvents().get(idx);
+                    String ename = event.getName();
                     club.removeEvent(idx);
                     clubManager.saveAll();
+                    attendanceManager.removeAttendanceByEvent(club.getClubName(), ename);
                 } catch (Exception e) {
                     System.out.println("Invalid input!");
                 }
@@ -262,8 +282,43 @@ public class clubApp {
                     String nvenue = sc.nextLine();
                     System.out.print("New Date: ");
                     String ndate = sc.nextLine();
-                    club.updateEvent(index, new Event(nname, ndesc, nvenue, ndate));
+                    System.out.print("Is this event for club members only? (yes/no): ");
+                    boolean nmOnly = sc.nextLine().equalsIgnoreCase("yes");
+                    club.updateEvent(index, new Event(nname, ndesc, nvenue, ndate, nmOnly));
                     clubManager.saveAll();
+                } catch (Exception e) {
+                    System.out.println("Invalid input!");
+                }
+            } else if (choice.equals("8") && fullAccess) {
+                club.listEvents();
+                System.out.print("Enter event number to mark attendance: ");
+                try {
+                    int eIdx = Integer.parseInt(sc.nextLine()) - 1;
+                    Event event = club.getEvents().get(eIdx);
+                    for (manage.Person p : event.getAttendees()) {
+                        System.out.print("Mark " + p.getName() + " (" + p.getEmail() + ") as (P)resent / (A)bsent: ");
+                        String status = sc.nextLine().equalsIgnoreCase("P") ? "PRESENT" : "ABSENT";
+                        attendanceManager.markAttendance(club.getClubName(), event.getName(), p.getEmail(), status);
+                    }
+                    System.out.println("Attendance marked successfully.");
+                } catch (Exception e) {
+                    System.out.println("Invalid input!");
+                }
+            } else if (choice.equals("9") && fullAccess) {
+                club.listEvents();
+                System.out.print("Enter event number to view attendance: ");
+                try {
+                    int eIdx = Integer.parseInt(sc.nextLine()) - 1;
+                    Event event = club.getEvents().get(eIdx);
+                    java.util.List<String> records = attendanceManager.getAttendance(club.getClubName(), event.getName());
+                    if (records.isEmpty()) {
+                        System.out.println("No attendance records found.");
+                    } else {
+                        for (String r : records) {
+                            String[] p = r.split("\\|");
+                            System.out.println(p[2] + " : " + p[3]);
+                        }
+                    }
                 } catch (Exception e) {
                     System.out.println("Invalid input!");
                 }

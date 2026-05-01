@@ -83,6 +83,13 @@ public class UserManager {
         return null;
     }
 
+    public void removeUser(String email) {
+        admins.removeIf(u -> u.getEmail().equalsIgnoreCase(email));
+        coordinators.removeIf(u -> u.getEmail().equalsIgnoreCase(email));
+        students.removeIf(u -> u.getEmail().equalsIgnoreCase(email));
+        saveUsers();
+    }
+
     private void saveUsers() {
         try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_PATH))) {
             for (Admin a : admins)
