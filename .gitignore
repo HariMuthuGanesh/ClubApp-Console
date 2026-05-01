@@ -1,0 +1,27 @@
+# Build Artifacts
+target/
+bin/
+out/
+# *.class - User requested not to ignore these
+
+# IDE Settings
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS Specific
+.DS_Store
+Thumbs.db
+
+# Project Files
+# Allow .gitignore and .md files
+.gitignore/
+*.md
+.github/
+
+# Local Data and Sensitive Files
+file/
+schema.sql
+credentials/
+*.env
